@@ -1,9 +1,12 @@
 import express, { Request, Response, NextFunction } from 'express';
 import routers from './routes/index.routes'; 
+import 'dotenv/config';
+import connectDB from './database';
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 3000;
 const app = express();
 
+connectDB();
 app.use(routers);
 
 // Erros
