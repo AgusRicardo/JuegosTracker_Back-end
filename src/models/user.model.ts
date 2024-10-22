@@ -4,6 +4,7 @@ interface User extends Document {
   name: string;
   lastName: string;
   email: string;
+  googleId: string;
   isAdmin: boolean;
 }
 
@@ -12,6 +13,7 @@ const userSchema: Schema = new Schema(
     name: { type: String, required: true, maxlength: 50 },
     lastName: { type: String, required: true, maxlength: 50 },
     email: { type: String, required: true, maxlength: 50, unique: true },
+    googleId: { type: String, required: true, unique: true },
     isAdmin: { type: Boolean, required: true },
   },
   { timestamps: true }
