@@ -1,16 +1,10 @@
 import { Router } from 'express';
+import { getUsers, getUserById, getGamesByUser } from '../../controllers/users.controller';
 
 const router = Router();
 
-// GET user by id
-router.get('/user/:id', (req, res) => {
-  const id = req.params.id;
-  res.json({ id });
-})
-
-// GET all users
-router.get('/users', (req, res) => {
-  res.json({ users: "all users" });
-})
+router.get('/users', getUsers);
+router.get('/:id', getUserById);
+router.get('/:id/games', getGamesByUser);
 
 export default router;

@@ -1,13 +1,12 @@
-import mongoose from "mongoose";
+import { Pool } from "pg";
+const { db } = require("./config");
 
-const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO_URL || "");
-  } catch (error) {
-    console.log("Error: ", error);
-    console.error(error);
-    process.exit(1);
-  }
-}
+const pool = new Pool({
+  user: db.user,
+  password: db.password,
+  host: db.host,
+  port: db.db_port,
+  database: db.database
+});
 
-export default connectDB;
+module.exports = pool;
