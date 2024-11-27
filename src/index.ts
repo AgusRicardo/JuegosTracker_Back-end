@@ -2,9 +2,17 @@ import express, { Request, Response, NextFunction } from 'express';
 import routers from './routes/index.routes';
 import 'dotenv/config';
 
-const PORT = process.env.PORT || 3000;
+const cors = require("cors");
+const PORT = process.env.DB_PORT;
 const app = express();
 
+const corsOptions = {
+  origin: "http://localhost:5173",
+  credentials: true,
+  optionSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 app.use(routers);
 
 // Erros
@@ -14,6 +22,6 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server on ${PORT}`);
-});
+app.listen(PORT);
+
+PORT ? console.log(`Server on ${PORT}`) : console.log('Server off');

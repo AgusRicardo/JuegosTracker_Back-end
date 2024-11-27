@@ -5,6 +5,6 @@ const router = Router();
 
 router.get('/users', getUsers);
 router.get('/:id', getUserById);
-router.get('/:id/games', getGamesByUser);
+router.get('/:id/:platform/games', getGamesByUser);
 
 export default router;

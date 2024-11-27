@@ -29,29 +29,41 @@ export const getUserById = async (req: Request, res: Response, next: NextFunctio
 
 export const getGamesByUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { id } = req.params
+        const { id } = req.params; 
+        const { platform } = req.params; 
+        
+        let query = `
+            SELECT 
+                g.game_id,
+                g.name AS game,
+                p.name AS platform,
+                c.name AS category,
+                g.img_url AS img
+            FROM "GameUser" AS gu
+            JOIN "Game" AS g ON gu.game_id = g.game_id
+            JOIN "Platform" AS p ON g.platform_id = p.platform_id
+            JOIN "Category" AS c ON g.category_id = c.category_id
+            JOIN "User" AS u ON gu.user_id = u.user_id
+            WHERE u.user_id = $1
+        `;
+        
+        const queryParams: Array<string | number> = [id];
 
-        const result = await pool.query(`SELECT g.name AS game,
-                                            p.name AS platform,
-                                            c.name AS category
-                                        FROM "GameUser" AS gu
-                                        JOIN "Game" AS g
-                                        ON gu.game_id = g.game_id
-                                        JOIN "Platform" AS p
-                                        ON g.platform_id = p.platform_id
-                                        JOIN "Category" AS c
-                                        ON g.category_id = c.category_id
-                                        JOIN "User" AS u
-                                        ON gu.user_id = u.user_id
-                                        WHERE u.user_id = $1;`, [id]);
+        if (platform) {
+            query += ` AND p.name ILIKE $2`;
+            queryParams.push(`${platform}`);
+        }
+
+        const result = await pool.query(query, queryParams);
         res.json(result.rows);
     } catch (error) {
-        next(error)
+        next(error);
         return res.status(500).json({
             error: 'Error en la query.',
-        })
+        });
     }
 };
+
 
 module.exports = {
     getUsers,
