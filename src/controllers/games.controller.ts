@@ -16,7 +16,7 @@ export const getGames = async (req: Request, res: Response, next: NextFunction) 
 export const getGameById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params
-  
+
     const result = await pool.query(`SELECT * FROM public."Game" WHERE game_id = $1;`, [id]);
     res.json(result.rows);
   } catch (error) {
@@ -64,8 +64,37 @@ export const createGame = async (req: Request, res: Response, next: NextFunction
   }
 };
 
+export const deleteGame = async (req: Request, res: Response, next: NextFunction) => {
+  const { gameId, userId } = req.body;
+
+  try {
+    const deleteGameQuery = `
+      DELETE FROM public."GameUser"
+      WHERE game_id = $1
+      AND user_id = $2;
+    `;
+    const gameResult = await pool.query(deleteGameQuery, [gameId, userId]);
+    if (gameResult.rowCount === 0) {
+      throw new Error('No se pudo borrar el juego.');
+    }
+    
+    res.status(201).json({
+      message: 'Juego borrado con éxito.',
+      gameId,
+      userId
+    });
+
+  } catch (error) {
+    next(error);
+    return res.status(500).json({
+      error: 'Error al borrar el juego.',
+    });
+  }
+};
+
 module.exports = {
   getGames,
   getGameById,
-  createGame
+  createGame,
+  deleteGame
 };
