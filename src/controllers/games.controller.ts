@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-const pool = require('../database.ts');
+const pool = require('../database');
 
 export const getEstadistics = async (req: Request, res: Response, next: NextFunction) => {
   const { userId } = req.body;  
