@@ -7,7 +7,7 @@ const PORT = process.env.DB_PORT;
 const app = express();
 
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: "https://juegos-tracker-front-end.vercel.app",
   credentials: true,
   optionSuccessStatus: 200,
 };
