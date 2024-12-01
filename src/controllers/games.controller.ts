@@ -1,6 +1,27 @@
 import { NextFunction, Request, Response } from 'express';
 const pool = require('../database.ts');
 
+export const getEstadistics = async (req: Request, res: Response, next: NextFunction) => {
+  const { userId } = req.body;  
+  try {
+    const result = await pool.query(`
+      SELECT 
+        COALESCE(p.name, 'Total General') AS plataforma,
+        COUNT(*) AS total_juegos
+      FROM "GameUser" gu
+      JOIN "Game" g ON gu.game_id = g.game_id
+      JOIN "Platform" p ON g.platform_id = p.platform_id
+      WHERE gu.user_id = $1
+      GROUP BY 
+        ROLLUP(p.name)
+      ORDER BY total_juegos DESC;`, [userId]);
+    res.json(result.rows);
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 export const getGames = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await pool.query(`SELECT * FROM "Game"`);
@@ -15,8 +36,7 @@ export const getGames = async (req: Request, res: Response, next: NextFunction) 
 
 export const getGameById = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { id } = req.params
-
+    const { id } = req.params;
     const result = await pool.query(`SELECT * FROM public."Game" WHERE game_id = $1;`, [id]);
     res.json(result.rows);
   } catch (error) {
@@ -29,7 +49,6 @@ export const getGameById = async (req: Request, res: Response, next: NextFunctio
 
 export const createGame = async (req: Request, res: Response, next: NextFunction) => {
   const { name, img_url, platform_id, category_id, userId } = req.body;
-
   try {
     await pool.query('BEGIN');
     const insertGameQuery = `
@@ -96,5 +115,6 @@ module.exports = {
   getGames,
   getGameById,
   createGame,
-  deleteGame
+  deleteGame,
+  getEstadistics
 };
