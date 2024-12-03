@@ -65,8 +65,37 @@ export const getGamesByUser = async (req: Request, res: Response, next: NextFunc
 };
 
 
+export const insertUser = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { email, userId } = req.body;
+        
+        if (!email || !userId) {
+            return res.status(400).json({
+                error: 'Faltan campos requeridos: email o userId.',
+            });
+        }
+
+        const query = `
+            INSERT INTO public."User" (user_id, email)
+            VALUES ($1, $2)
+            RETURNING *;
+        `;
+
+        const result = await pool.query(query, [userId, email]);
+        res.status(201).json({
+            message: 'Usuario creado exitosamente.',
+            user: result.rows[0],
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+
+
 module.exports = {
     getUsers,
     getUserById,
-    getGamesByUser
+    getGamesByUser,
+    insertUser
 };
